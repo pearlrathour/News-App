@@ -8,7 +8,7 @@ export class NewsItem extends Component {
       <div className="my-3">
         {/* This is a news item */}
         <div className="card">
-          <img src={!imageurl ? "https://images.cnbctv18.com/wp-content/uploads/2019/08/bse.jpg" : imageurl} className="card-img-top" alt="..."></img>
+          <img src={!imageurl ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkTW_XvTHnKgIpsO0IrzokA8q62K0jFpgXdQ&usqp=CAU" : imageurl} className="card-img-top" alt="..."></img>
             <div className="card-body">
               <h5 className="card-title">{title}....</h5>
               <p className="card-text">{description}....</p>

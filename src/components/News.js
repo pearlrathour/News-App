@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import NewsItem from './NewsItem'
 import PropTypes from 'prop-types'
+// import InfiniteScroll from "react-infinite-scroll-component"
 
 export class News extends Component {
   // articles = [
@@ -19,19 +20,6 @@ export class News extends Component {
   //   },
   //   {
   //     "source": {
-  //       "id": "the-times-of-india",
-  //       "name": "The Times of India"
-  //     },
-  //     "author": "Times Of India",
-  //     "title": "PBKS vs MI Live Score, IPL 2021: Mumbai Indians seek consistency; Punjab Kings eye return to winning ways",
-  //     "description": "IPL Live Score: Mumbai Indians seek consistency; Punjab Kings eye return to winning ways. Stay with TOI to get IPL live score, playing 11, scorecard, highlights and ball by ball score updates of the 17th IPL match between Punjab Kings and Mumbai Indians.",
-  //     "url": "http://timesofindia.indiatimes.com/sports/cricket/ipl/live-blog/punjab-kings-vs-mumbai-indians-pbks-vs-mi-live-score-ipl-2021-17th-match-chennai/liveblog/82214950.cms",
-  //     "urlToImage": "https://static.toiimg.com/thumb/msid-82214950,width-1070,height-580,imgsize-157009,resizemode-75,overlay-toi_sw,pt-32,y_pad-40/photo.jpg",
-  //     "publishedAt": "2021-04-23T05:44:49Z",
-  //     "content": "Ravi Bishnoi return on the cards?\r\nDeepak Hooda showed what he is capable of, but greater consistency would be needed from him if the team has to prosper. They bet on Australian pace imports Jhye Ric… [+3131 chars]"
-  //   },
-  //   {
-  //     "source": {
   //       "id": "espn",
   //       "name": "ESPN"
   //     },
@@ -46,78 +34,102 @@ export class News extends Component {
   // ]
 
   static defaultProps = {
-    country : "in",
-    pageSize : 16,
-    category : "general",
-  } 
-
-  static propTypes = {
-    country : PropTypes.string,
-    pageSize : PropTypes.number,
-    category : PropTypes.string
+    country: "in",
+    pageSize: 16,
+    category: "general",
   }
 
-  constructor() {
-    super();
-    console.log("Constructor");
+  static propTypes = {
+    country: PropTypes.string,
+    pageSize: PropTypes.number,
+    category: PropTypes.string
+  }
+
+  capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  constructor(props) {
+    super(props);
+    // console.log("Constructor");
     this.state = {
       articles: [],
       page: 1
     }
+    document.title = `News App - ${this.capitalizeFirstLetter(this.props.category)}`;
+  }
+
+  async updateNews(pageNo) {
+    this.props.setProgress(10);
+    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    let data = await fetch(url);    //async waits for promise within body to be resolved
+    this.props.setProgress(30);
+    let parsedData = await data.json();
+    this.props.setProgress(50);
+    this.setState({ 
+      articles: parsedData.articles,
+      totalResults: parsedData.totalResults 
+    });
+    this.props.setProgress(100);
   }
 
   async componentDidMount() {
-    console.log("cmd");
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&category=${this.props.category}&apiKey=29d774c4ed0142958ca0cc70070d9f6f&page=1&pageSize=${this.props.pageSize}`;
-    let data = await fetch(url);    //async waits for promise within body to be resolved
-    let parsedData = await data.json();
-    console.log(parsedData);
-    this.setState({ articles: parsedData.articles, totalResults: parsedData.totalResults });
+    // console.log("cmd");
+    // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&category=${this.props.category}&apiKey=&page=1&pageSize=${this.props.pageSize}`;
+    // let data = await fetch(url);    //async waits for promise within body to be resolved
+    // let parsedData = await data.json();
+    // console.log(parsedData);
+    // this.setState({ articles: parsedData.articles, totalResults: parsedData.totalResults });
+    this.updateNews();
   }
 
   handlePreviousCLick = async () => {
     // console.log("Prev")
 
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&category=${this.props.category}&apiKey=29d774c4ed0142958ca0cc70070d9f6f&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
-    let data = await fetch(url);    //async waits for promise within body to be resolved
-    let parsedData = await data.json();
-    console.log(parsedData);
+    // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&category=${this.props.category}&apiKey=&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
+    // let data = await fetch(url);    //async waits for promise within body to be resolved
+    // let parsedData = await data.json();
+    // console.log(parsedData);
 
-    this.setState({
-      page: this.state.page - 1,
-      articles: parsedData.articles
-    })
+    // this.setState({
+    //   page: this.state.page - 1,
+    //   articles: parsedData.articles
+    // })
+    this.setState({ page: this.state.page - 1 });
+    this.updateNews();
   }
 
   handleNextCLick = async () => {
     // console.log("Nxt")
 
-    if (Math.ceil(this.state.totalResults / 16) < this.state.page + 1) {
+    // if (Math.ceil(this.state.totalResults / 16) < this.state.page + 1) {
 
-    }
+    // }
 
-    else {
-      let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&category=${this.props.category}&apiKey=29d774c4ed0142958ca0cc70070d9f6f&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
-      let data = await fetch(url);    //async waits for promise within body to be resolved
-      let parsedData = await data.json();
-      console.log(parsedData);
+    // else {
+    //   let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&category=${this.props.category}&apiKey=&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
+    //   let data = await fetch(url);    //async waits for promise within body to be resolved
+    //   let parsedData = await data.json();
+    //   console.log(parsedData);
 
-      this.setState({
-        page: this.state.page + 1,
-        articles: parsedData.articles
-      })
-    }
+    //   this.setState({
+    //     page: this.state.page + 1,
+    //     articles: parsedData.articles
+    //   })
+    // }
+    this.setState({ page: this.state.page + 1 })
+    this.updateNews();
   }
 
   render() {
-    console.log("render")
+    // console.log("render")
     return (
       <div className="container my-3">
-        <h1 className="text-center">News App - Top Headlines</h1>
+        <h1 className="text-center">News App - Top {this.capitalizeFirstLetter(this.props.category)} Headlines</h1>
         <div className="row">
           {this.state.articles.map((element) => {
             return <div className="col-md-3" key={element.url}>
-              <NewsItem title={element.title ? element.title.slice(0, 70) : ""} description={element.description ? element.description.slice(0, 84) : ""} imageurl={element.urlToImage} newsurl={element.url} author={element.author} date={element.publishedAt}/>
+              <NewsItem title={element.title ? element.title.slice(0, 70) : ""} description={element.description ? element.description.slice(0, 84) : ""} imageurl={element.urlToImage} newsurl={element.url} author={element.author} date={element.publishedAt} />
             </div>
           })}
         </div>
