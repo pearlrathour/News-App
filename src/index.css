@@ -1,0 +1,6 @@
+.custom-image {
+    width: 305px;
+    height: 210px;
+    object-fit: cover; /* Optional: Adjusts the image to cover the container */
+  }
+  
